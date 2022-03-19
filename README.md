@@ -1,3 +1,25 @@
 # OWL_DRONE_PHYTON
 
-###Subtitle
+
+### OWL Subtitle
+
+#Execution Plan
+
+##Initial Step:
+
+#Hardware
+* GPS / Sensor Calibration
+* ESC Test
+
+#Software Raspberry Pi
+* Takeoff Sequence 
+* Send GPS Coordinates with UDP 
+
+#Software Raspberry Android
+* Google Maps from UDP Coordinates  
+
+
+
+
+
+
