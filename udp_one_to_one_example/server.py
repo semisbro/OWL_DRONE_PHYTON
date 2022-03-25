@@ -10,6 +10,7 @@ connection_string = sitl.connection_string()
 from dronekit import connect, VehicleMode
 
 
+
 print( "Start simulator (SITL)")
 
 
