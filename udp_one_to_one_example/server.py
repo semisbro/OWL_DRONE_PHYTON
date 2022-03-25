@@ -1,12 +1,15 @@
 import socket
+import dronekit
+import dronekit_sitl
+from dronekit import connect
+from helloWorld import connection_string
+vehicle = connect(connection_string, wait_ready=True)
 
 localIP = "127.0.0.1"
-
 localPort = 20001
-
 bufferSize = 1024
 
-msgFromServer = "Hello UDP Client"
+msgFromServer = 'Empty'
 
 bytesToSend = str.encode(msgFromServer)
 
@@ -22,8 +25,13 @@ print("UDP server up and listening")
 
 # Listen for incoming datagrams
 
-while (True):
+while True:
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
+
+    latitude = vehicle.location.global_relative_frame.lat
+    longitude = vehicle.location.global_relative_frame.lon
+    map_dat = dict(latitude=vehicle.location.global_relative_frame.lat, longitude=vehicle.location.global_relative_frame.lon)
+    print(map_dat)
 
     message = bytesAddressPair[0]
 

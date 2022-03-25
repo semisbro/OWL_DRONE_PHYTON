@@ -14,6 +14,7 @@
 #Software Raspberry Pi
 * Takeoff Sequence 
 * Send GPS Coordinates with UDP 
+* Drop start (Drop drone from hand to activate drone)
 
 #Software Raspberry Android
 * Google Maps from UDP Coordinates  

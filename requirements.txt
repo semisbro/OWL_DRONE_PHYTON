@@ -1,0 +1,2 @@
+twisted
+dronekit~=2.9.2
