@@ -1,29 +1,24 @@
+import json
 import socket
 import dronekit
 import dronekit_sitl
 from dronekit import connect
 import dronekit_sitl
+
 sitl = dronekit_sitl.start_default()
 connection_string = sitl.connection_string()
 
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode
 
+print("Start simulator (SITL)")
 
-
-print( "Start simulator (SITL)")
-
-
-
-localIP = "127.0.0.1"
+localIP = "192.168.0.143"
 localPort = 20002
 bufferSize = 1024
 
-msgFromServer = 'Empty'
 
-bytesToSend = str.encode(msgFromServer)
 vehicle = connect(connection_string, wait_ready=True)
-
 
 # Create a datagram socket
 
@@ -44,9 +39,7 @@ while True:
     longitude = vehicle.location.global_relative_frame.lon
     print(latitude)
     print(longitude)
-    #map_dat = dict(latitude="", longitude=vehicle.location.global_relative_frame.lon)
-    #print(map_dat)
-
+    map_dat = dict(latitude=latitude, longitude=longitude)
 
     message = bytesAddressPair[0]
 
@@ -57,6 +50,9 @@ while True:
 
     print(clientMsg)
     print(clientIP)
+    msgFromServer = 'Empty'
+
+    bytesToSend: bytes = str.encode(json.dumps(map_dat))
 
     # Sending a reply to client
 
