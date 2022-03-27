@@ -48,8 +48,8 @@ while True:
     clientMsg = "Message from Client:{}".format(message)
     clientIP = "Client IP Address:{}".format(address)
 
-    print(clientMsg)
-    print(clientIP)
+    #print(clientMsg)
+    #print(clientIP)
     msgFromServer = 'Empty'
 
     bytesToSend: bytes = str.encode(json.dumps(map_dat))
