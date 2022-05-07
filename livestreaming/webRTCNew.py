@@ -2,12 +2,12 @@
 import uvicorn, cv2
 from vidgear.gears.asyncio import WebGear_RTC
 
+
 # create your own custom streaming class
 class Custom_Stream_Class:
     """
     Custom Streaming using OpenCV
     """
-
 
     def __init__(self, source=0):
 
@@ -54,6 +54,7 @@ class Custom_Stream_Class:
         if not self.source is None:
             self.source.release()
 
+
 # assign your Custom Streaming Class with adequate source (for e.g. foo.mp4)
 # to `custom_stream` attribute in options parameter
 options = {"custom_stream": Custom_Stream_Class(source=0)}
@@ -62,7 +63,7 @@ options = {"custom_stream": Custom_Stream_Class(source=0)}
 web = WebGear_RTC(logging=True, **options)
 
 # run this app on Uvicorn server at address http://localhost:8000/
-uvicorn.run(web(), host="192.168.0.143", port=8000)
+uvicorn.run(web(), host="0.0.0.0", port=8000)
 
 # close app safely
 web.shutdown()
