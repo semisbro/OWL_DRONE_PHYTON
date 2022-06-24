@@ -1,14 +1,15 @@
 import json
 import socket
+import time
+
 import dronekit
-import dronekit_sitl
 from dronekit import connect
 import dronekit_sitl
 import psutil
 import GPUtil
 
-#sitl = dronekit_sitl.start_default()
-#connection_string = sitl.connection_string()
+sitl = dronekit_sitl.start_default()
+connection_string = sitl.connection_string()
 
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode
@@ -22,7 +23,7 @@ bufferSize = 1024
 #msgFromServer = 'Alive'
 
 #bytesToSend = str.encode(msgFromServer)
-vehicle = connect(connection_string, wait_ready=True)
+#vehicle = connect(connection_string, wait_ready=True)
 
 # Create a datagram socket
 
@@ -38,7 +39,7 @@ print("UDP server up and listening")
 
 
 while True:
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
+    #bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
 
     gpus = GPUtil.getGPUs()
     list_gpus = []
@@ -69,32 +70,37 @@ while True:
                      # "cpu_freq_max": cpufreq.max,
                      # "cpu_freq_min": cpufreq.min,
                      "cpu_freq_curr": cpufreq.current,
-                     # "cpu_freq_perc": psutil.cpu_percent(percpu=True, interval=1),
+                     "cpu_freq_perc": psutil.cpu_percent(percpu=True, interval=1),
                      "cpu_freq_perc_simpl": psutil.cpu_percent(),
                      "ram_used": svmem.percent,
                      "gpu_name": gpu.name,
                      "gpu_used": gpu.load * 100,
                      "gpu_temp": gpu.temperature
                      }
+
+    print( msgFromClient)
     bytesToSend = json.dumps(msgFromClient).encode('utf-8')
 
-    latitude = vehicle.location.global_relative_frame.lat
-    longitude = vehicle.location.global_relative_frame.lon
+    #latitude = vehicle.location.global_relative_frame.lat
+    #longitude = vehicle.location.global_relative_frame.lon
     # print(latitude)
     # print(longitude)
     # map_dat = dict(latitude="", longitude=vehicle.location.global_relative_frame.lon)
     # print(map_dat)
 
-    message = bytesAddressPair[0]
 
-    address = bytesAddressPair[1]
+    time.sleep(1)
 
-    clientMsg = "Message from Client:{}".format(message)
-    clientIP = "Client IP Address:{}".format(address)
+    #message = bytesAddressPair[0]
+
+    #address = bytesAddressPair[1]
+
+    #clientMsg = "Message from Client:{}".format(message)
+    #clientIP = "Client IP Address:{}".format(address)
 
     # print(clientMsg)
     # print(clientIP)
 
     # Sending a reply to client
 
-    UDPServerSocket.sendto(bytesToSend, address)
+    #UDPServerSocket.sendto(bytesToSend, address)
