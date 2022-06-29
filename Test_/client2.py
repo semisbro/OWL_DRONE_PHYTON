@@ -1,64 +1,26 @@
 import socket
-import sys
-import threading
+import time
 
-rendezvous = ('localhost', 55555)
+msgFromClient = "Hello UDP Server"
 
-# connect to rendezvous
-print('connecting to rendezvous server')
+bytesToSend = str.encode(msgFromClient)
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('0.0.0.0', 50002))
-sock.sendto(b'0', rendezvous)
+serverAddressPort = ("127.0.0.1", 20001)
 
-while True:
-    data = sock.recv(1024).decode()
+bufferSize = 1024
 
-    if data.strip() == 'ready':
-        print('checked in with server, waiting')
-        break
+# Create a UDP socket at client side
 
-data = sock.recv(1024).decode()
-print(data)
-ip, sport, dport = data.split(' ')
-sport = int(sport)
-dport = int(dport)
+UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-print('\ngot peer')
-print('  ip:          {}'.format(ip))
-print('  source port: {}'.format(sport))
-print('  dest port:   {}\n'.format(dport))
-
-# punch hole
-# equiv: echo 'punch hole' | nc -u -p 50001 x.x.x.x 50002
-print('punching hole')
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('0.0.0.0', sport))
-sock.sendto(b'0', (ip, dport))
-
-print('ready to exchange messages\n')
-
-
-# listen for
-# equiv: nc -u -l 50001
-def listen():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(('0.0.0.0', sport))
-
-    while True:
-        data = sock.recv(1024)
-        print('\rpeer: {}\n> '.format(data.decode()), end='')
-
-
-listener = threading.Thread(target=listen, daemon=True);
-listener.start()
-
-# send messages
-# equiv: echo 'xxx' | nc -u -p 50002 x.x.x.x 50001
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('0.0.0.0', dport))
+# Send to server using created UDP socket
 
 while True:
-    msg = input('> ')
-    sock.sendto(msg.encode(), (ip, sport))
+    UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+    msgFromServer = UDPClientSocket.recvfrom(bufferSize)
+
+    msg = "Message from Server {}".format(msgFromServer[0])
+
+    print(msg)
+    time.sleep(1)
+

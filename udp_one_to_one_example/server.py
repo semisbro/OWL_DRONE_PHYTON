@@ -16,18 +16,20 @@ from dronekit import connect, VehicleMode
 
 print("Start simulator (SITL)")
 
-localIP = "127.0.0.1"
+localIP = "192.168.0.143"
 localPort = 20002
 bufferSize = 1024
 
-#msgFromServer = 'Alive'
+msgFromServer = 'alive'
 
-#bytesToSend = str.encode(msgFromServer)
-#vehicle = connect(connection_string, wait_ready=True)
+bytesToSend = str.encode(msgFromServer)
+# vehicle = connect(connection_string, wait_ready=True)
 
-# Create a datagram socket
+# Create a datagram
 
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
+print("started a server " + localIP + str(localPort))
 
 # Bind to address and ip
 
@@ -39,7 +41,7 @@ print("UDP server up and listening")
 
 
 while True:
-    #bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
+    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
 
     gpus = GPUtil.getGPUs()
     list_gpus = []
@@ -70,37 +72,38 @@ while True:
                      # "cpu_freq_max": cpufreq.max,
                      # "cpu_freq_min": cpufreq.min,
                      "cpu_freq_curr": cpufreq.current,
-                     "cpu_freq_perc": psutil.cpu_percent(percpu=True, interval=1),
-                     "cpu_freq_perc_simpl": psutil.cpu_percent(),
+                     "cpu_freq_perc_simple": psutil.cpu_percent(),
                      "ram_used": svmem.percent,
                      "gpu_name": gpu.name,
                      "gpu_used": gpu.load * 100,
-                     "gpu_temp": gpu.temperature
+                     "gpu_temp": gpu.temperature,
+                     "latitude": 10.3333,
+                     "longitude": 10.888,
+
                      }
 
-    print( msgFromClient)
+    print(msgFromClient)
     bytesToSend = json.dumps(msgFromClient).encode('utf-8')
 
-    #latitude = vehicle.location.global_relative_frame.lat
-    #longitude = vehicle.location.global_relative_frame.lon
+    # latitude = vehicle.location.global_relative_frame.lat
+    # longitude = vehicle.location.global_relative_frame.lon
     # print(latitude)
     # print(longitude)
     # map_dat = dict(latitude="", longitude=vehicle.location.global_relative_frame.lon)
     # print(map_dat)
 
-
     time.sleep(1)
 
-    #message = bytesAddressPair[0]
+    message = bytesAddressPair[0]
 
-    #address = bytesAddressPair[1]
+    address = bytesAddressPair[1]
 
-    #clientMsg = "Message from Client:{}".format(message)
-    #clientIP = "Client IP Address:{}".format(address)
+    # clientMsg = "Message from Client:{}".format(message)
+    # clientIP = "Client IP Address:{}".format(address)
 
     # print(clientMsg)
     # print(clientIP)
 
     # Sending a reply to client
 
-    #UDPServerSocket.sendto(bytesToSend, address)
+    UDPServerSocket.sendto(bytesToSend, address)

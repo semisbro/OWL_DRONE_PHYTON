@@ -1,62 +1,40 @@
 import socket
-import sys
-import threading
 
-rendezvous = ('localhost', 55555)
+localIP = "127.0.0.1"
 
-# connect to rendezvous
-print('connecting to rendezvous server')
+localPort = 20001
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('0.0.0.0', 50001))
-sock.sendto(b'0', rendezvous)
+bufferSize = 1024
 
-while True:
-    data = sock.recv(1024).decode()
+msgFromServer = "Hello UDP Client"
 
-    if data.strip() == 'ready':
-        print('checked in with server, waiting')
-        break
+bytesToSend = str.encode(msgFromServer)
 
-data = sock.recv(1024).decode()
-print(data)
-ip, sport, dport = data.split(' ')
-sport = int(sport)
-dport = int(dport)
+# Create a datagram socket
 
-print('\ngot peer')
-print('  ip:          {}'.format(ip))
-print('  source port: {}'.format(sport))
-print('  dest port:   {}\n'.format(dport))
+UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-# punch hole
-# equiv: echo 'punch hole' | nc -u -p 50001 x.x.x.x 50002
-print('punching hole')
+# Bind to address and ip
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('0.0.0.0', sport))
-sock.sendto(b'0', (ip, dport))
+UDPServerSocket.bind((localIP, localPort))
 
-print('ready to exchange messages\n')
+print("UDP server up and listening")
 
-# listen for
-# equiv: nc -u -l 50001
-def listen():
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(('0.0.0.0', sport))
+# Listen for incoming datagrams
 
-    while True:
-        data = sock.recv(1024)
-        print('\rpeer: {}\n> '.format(data.decode()), end='')
+while (True):
+    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
 
-listener = threading.Thread(target=listen, daemon=True);
-listener.start()
+    message = bytesAddressPair[0]
 
-# send messages
-# equiv: echo 'xxx' | nc -u -p 50002 x.x.x.x 50001
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind(('0.0.0.0', dport))
+    address = bytesAddressPair[1]
 
-while True:
-    msg = input('> ')
-    sock.sendto(msg.encode(), (ip, sport))
+    clientMsg = "Message from Client:{}".format(message)
+    clientIP = "Client IP Address:{}".format(address)
+
+    print(clientMsg)
+    print(clientIP)
+
+    # Sending a reply to client
+
+    UDPServerSocket.sendto(bytesToSend, address)
