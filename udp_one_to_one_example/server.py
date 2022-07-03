@@ -22,6 +22,7 @@ bufferSize = 1024
 
 max_speed = 10
 velocity = interp1d([-1, 1], [max_speed*-1, max_speed])#mapping 0-1 to 0-10 --> 0,2 = 2 m/s //maxspeed 10m/s
+velocity_vertical = interp1d([-1, 1], [max_speed*-1/10, max_speed/10])#mapping 0-1 to 0-10 --> 0,2 = 2 m/s //maxspeed 10m/s
 
 #msgFromServer = 'Alive'
 #control_json = {"axisLX": -1}
@@ -105,11 +106,18 @@ while True:
         if control_json["Y-Button"] == True:
             print("Take a photo")
 
-    if control_json.__contains__("axisLX"): #X achse nach vorne und hinden
-        vx = velocity(control_json["axisLX"])
+    if control_json.__contains__("axisLY"): #X achse nach vorne(positiv) und hinden(negativ)
+        vx = velocity(control_json["axisLY"])
         print(vx)
-
-
+    if control_json.__contains__("axisLX"): #Y achse nach recht(positiv) und links(negativ)
+        vy = velocity(control_json["axisLX"])
+        print(vy)
+    if control_json.__contains__("axisRZ"): #Z achse nach unten(positiv) und oben(negativ)
+        vz = velocity_vertical(control_json["axisRZ"])
+        print(vz)
+    if control_json.__contains__("axisLZ"): #Z achse nach unten(positiv) und oben(negativ)
+        vyaw = velocity_vertical(control_json["axisLZ"])
+        print(vyaw)
     print(clientMsg)
     # print(clientIP)
 
