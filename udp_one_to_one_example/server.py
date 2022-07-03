@@ -113,10 +113,10 @@ while True:
         vy = velocity(control_json["axisLX"])
         print(vy)
     if control_json.__contains__("axisRZ"): #Z achse nach unten(positiv) und oben(negativ)
-        vz = velocity_vertical(control_json["axisRZ"])
+        vz = velocity_vertical(control_json["axisRZ"])*-1
         print(vz)
-    if control_json.__contains__("axisLZ"): #Z achse nach unten(positiv) und oben(negativ)
-        vyaw = velocity_vertical(control_json["axisLZ"])
+    if control_json.__contains__("axisZ"): #RZ achse yaw rate in rad/s
+        vyaw = velocity_vertical(control_json["axisZ"])
         print(vyaw)
     print(clientMsg)
     # print(clientIP)
