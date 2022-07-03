@@ -1,29 +1,32 @@
 import json
 import socket
 import time
-
 import dronekit
 from dronekit import connect
 import dronekit_sitl
+from scipy.interpolate import interp1d
 import psutil
 import GPUtil
 
-sitl = dronekit_sitl.start_default()
-connection_string = sitl.connection_string()
+#sitl = dronekit_sitl.start_default()
+#connection_string = sitl.connection_string()
 
 # Import DroneKit-Python
 from dronekit import connect, VehicleMode
 
 print("Start simulator (SITL)")
 
-localIP = "192.168.0.143"
+localIP = "127.0.0.1"
 localPort = 20002
 bufferSize = 1024
 
-msgFromServer = 'alive'
+max_speed = 10
+velocity = interp1d([-1, 1], [max_speed*-1, max_speed])#mapping 0-1 to 0-10 --> 0,2 = 2 m/s //maxspeed 10m/s
 
-bytesToSend = str.encode(msgFromServer)
-# vehicle = connect(connection_string, wait_ready=True)
+#msgFromServer = 'Alive'
+#control_json = {"axisLX": -1}
+#bytesToSend = str.encode(msgFromServer)
+#vehicle = connect(connection_string, wait_ready=True)
 
 # Create a datagram
 
@@ -38,7 +41,6 @@ UDPServerSocket.bind((localIP, localPort))
 print("UDP server up and listening")
 
 # Listen for incoming datagrams
-
 
 while True:
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
@@ -67,7 +69,7 @@ while True:
         ))
     svmem = psutil.virtual_memory()
     cpufreq = psutil.cpu_freq()
-    msgFromClient = {"cpu_core_phy": psutil.cpu_count(logical=False),
+    msgForClient = {"cpu_core_phy": psutil.cpu_count(logical=False),
                      "cpu_core_total": psutil.cpu_count(logical=True),
                      # "cpu_freq_max": cpufreq.max,
                      # "cpu_freq_min": cpufreq.min,
@@ -79,11 +81,10 @@ while True:
                      "gpu_temp": gpu.temperature,
                      "latitude": 10.3333,
                      "longitude": 10.888,
-
                      }
 
-    print(msgFromClient)
-    bytesToSend = json.dumps(msgFromClient).encode('utf-8')
+    #print(msgFromClient)
+    bytesToSend = json.dumps(msgForClient).encode('utf-8')
 
     # latitude = vehicle.location.global_relative_frame.lat
     # longitude = vehicle.location.global_relative_frame.lon
@@ -93,15 +94,23 @@ while True:
     # print(map_dat)
 
     time.sleep(1)
-
     message = bytesAddressPair[0]
-
     address = bytesAddressPair[1]
 
-    # clientMsg = "Message from Client:{}".format(message)
+    clientMsg = "Message from Client:{}".format(message)
     # clientIP = "Client IP Address:{}".format(address)
 
-    # print(clientMsg)
+    control_json = message
+    if control_json.__contains__("Y-Button"):
+        if control_json["Y-Button"] == True:
+            print("Take a photo")
+
+    if control_json.__contains__("axisLX"): #X achse nach vorne und hinden
+        vx = velocity(control_json["axisLX"])
+        print(vx)
+
+
+    print(clientMsg)
     # print(clientIP)
 
     # Sending a reply to client
