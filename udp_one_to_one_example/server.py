@@ -121,6 +121,7 @@ while True:
     print(clientMsg)
     # print(clientIP)
 
+
     # Sending a reply to client
 
     UDPServerSocket.sendto(bytesToSend, address)
