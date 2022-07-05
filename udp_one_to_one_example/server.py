@@ -8,7 +8,6 @@ from pymavlink import mavutil
 from scipy.interpolate import interp1d
 import psutil
 import GPUtil
-import pymavlink
 
 sitl = dronekit_sitl.start_default()
 connection_string = sitl.connection_string()
